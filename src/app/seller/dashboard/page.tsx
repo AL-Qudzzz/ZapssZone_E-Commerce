@@ -1,5 +1,6 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { DollarSign, Package, Users, Activity } from "lucide-react";
+import { SeedButton } from "@/components/seller/seed-button";
 
 export default function SellerDashboard() {
   const stats = [
@@ -10,8 +11,18 @@ export default function SellerDashboard() {
   ];
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold font-headline mb-6">Dashboard</h1>
+    <div className="space-y-6">
+      <h1 className="text-3xl font-bold font-headline">Dashboard</h1>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Seed Database</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <SeedButton />
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title}>
@@ -26,7 +37,7 @@ export default function SellerDashboard() {
           </Card>
         ))}
       </div>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader><CardTitle>Recent Orders</CardTitle></CardHeader>
           <CardContent>
