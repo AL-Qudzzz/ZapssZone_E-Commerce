@@ -43,7 +43,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   const { user } = useAuth();
 
   const mergeCarts = useCallback(async (localCart: CartItem[], userId: string) => {
-    if (localCart.length === 0) return;
+    if (localCart.length === 0 || !db) return;
     
     const cartRef = collection(db, 'users', userId, 'cart');
     const batch = writeBatch(db);
@@ -58,7 +58,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   useEffect(() => {
-    if (user) {
+    if (user && db) {
       setLoading(true);
       const localCart = JSON.parse(localStorage.getItem('cart') || '[]');
       if (localCart.length > 0) {
@@ -74,6 +74,9 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
           items.push(doc.data() as CartItem);
         });
         setCartItems(items);
+        setLoading(false);
+      }, (error) => {
+        console.error("Firestore snapshot error:", error);
         setLoading(false);
       });
 
@@ -91,32 +94,8 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [user, mergeCarts]);
 
-  const addToCart = useCallback(async (product: Product, quantity = 1) => {
-    const existingItem = cartItems.find(item => item.id === product.id);
-    const newQuantity = existingItem ? existingItem.quantity + quantity : quantity;
-    const newItem: CartItem = { ...product, quantity: newQuantity };
-
-    if (user) {
-        const cartItemRef = doc(db, 'users', user.uid, 'cart', product.id);
-        await setDoc(cartItemRef, newItem, { merge: true });
-    } else {
-        let updatedCart = [];
-        if (existingItem) {
-            updatedCart = cartItems.map(item => item.id === product.id ? newItem : item);
-        } else {
-            updatedCart = [...cartItems, newItem];
-        }
-        setCartItems(updatedCart);
-        localStorage.setItem('cart', JSON.stringify(updatedCart));
-    }
-    toast({
-      title: "Added to cart",
-      description: `${product.name} has been added to your cart.`,
-    });
-  }, [cartItems, user, toast]);
-
   const removeFromCart = useCallback(async (productId: string) => {
-    if (user) {
+    if (user && db) {
         const cartItemRef = doc(db, 'users', user.uid, 'cart', productId);
         await deleteDoc(cartItemRef);
     } else {
@@ -137,7 +116,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
       return;
     }
 
-    if (user) {
+    if (user && db) {
         const cartItemRef = doc(db, 'users', user.uid, 'cart', productId);
         await setDoc(cartItemRef, { quantity }, { merge: true });
     } else {
@@ -149,8 +128,32 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     }
   }, [cartItems, user, removeFromCart]);
 
+  const addToCart = useCallback(async (product: Product, quantity = 1) => {
+    const existingItem = cartItems.find(item => item.id === product.id);
+    const newQuantity = existingItem ? existingItem.quantity + quantity : quantity;
+    const newItem: CartItem = { ...product, quantity: newQuantity };
+
+    if (user && db) {
+        const cartItemRef = doc(db, 'users', user.uid, 'cart', product.id);
+        await setDoc(cartItemRef, newItem, { merge: true });
+    } else {
+        let updatedCart = [];
+        if (existingItem) {
+            updatedCart = cartItems.map(item => item.id === product.id ? newItem : item);
+        } else {
+            updatedCart = [...cartItems, newItem];
+        }
+        setCartItems(updatedCart);
+        localStorage.setItem('cart', JSON.stringify(updatedCart));
+    }
+    toast({
+      title: "Added to cart",
+      description: `${product.name} has been added to your cart.`,
+    });
+  }, [cartItems, user, toast]);
+
   const clearCart = useCallback(async () => {
-    if (user) {
+    if (user && db) {
         const cartRef = collection(db, 'users', user.uid, 'cart');
         const querySnapshot = await getDocs(cartRef);
         const batch = writeBatch(db);
@@ -165,7 +168,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
   }, [user]);
 
   const createOrder = useCallback(async () => {
-    if (!user) {
+    if (!user || !db) {
       toast({
         title: "Please login",
         description: "You need to be logged in to place an order.",
@@ -176,7 +179,7 @@ export const CartProvider = ({ children }: { children: ReactNode }) => {
     if (cartItems.length === 0) return;
 
     setLastOrder(cartItems);
-    localStorage.setItem('lastOrder', JSON.stringify(cartItems));
+    
 
     const ordersRef = collection(db, 'orders');
     await addDoc(ordersRef, {
