@@ -1,3 +1,5 @@
+"use client";
+
 import Image from "next/image";
 import Link from "next/link";
 import { Star, PlusCircle } from "lucide-react";
@@ -6,8 +8,12 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
 import type { Product } from "@/lib/placeholder-data";
+import { useCart } from "@/context/cart-context";
 
-export function ProductCard({ id, name, price, rating, reviews, image, 'data-ai-hint': aiHint, tags }: Product) {
+export function ProductCard({ product }: { product: Product }) {
+  const { id, name, price, rating, reviews, image, 'data-ai-hint': aiHint, tags } = product;
+  const { addToCart } = useCart();
+
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg">
       <CardHeader className="p-0">
@@ -45,7 +51,7 @@ export function ProductCard({ id, name, price, rating, reviews, image, 'data-ai-
       </CardContent>
       <CardFooter className="p-4 pt-0 flex justify-between items-center">
         <p className="text-xl font-bold text-primary">${price.toFixed(2)}</p>
-        <Button size="icon" variant="ghost" className="text-accent hover:text-accent-foreground">
+        <Button size="icon" variant="ghost" className="text-accent hover:text-accent-foreground" onClick={() => addToCart(product)}>
           <PlusCircle className="h-6 w-6" />
           <span className="sr-only">Add to Cart</span>
         </Button>

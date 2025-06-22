@@ -1,6 +1,7 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useMemo } from "react";
+import { useSearchParams } from "next/navigation";
 import { ProductFilters } from "@/components/products/product-filters";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Button } from "@/components/ui/button";
@@ -17,33 +18,30 @@ const sortOptions: { [key: string]: string } = {
 };
 
 export default function ProductsPage() {
-  const [filteredProducts, setFilteredProducts] = useState<Product[]>(allProducts);
-  const [selectedCategories, setSelectedCategories] = useState<string[]>([]);
+  const searchParams = useSearchParams();
+  const initialCategory = searchParams.get('category');
+
+  const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategory ? [initialCategory] : []);
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [price, setPrice] = useState<number>(1000);
   const [sort, setSort] = useState('featured');
 
-  useEffect(() => {
+  const filteredProducts = useMemo(() => {
     let products = [...allProducts];
 
-    // Filter by category
     if (selectedCategories.length > 0) {
       products = products.filter(p => selectedCategories.includes(p.category));
     }
 
-    // Filter by price
     products = products.filter(p => p.price <= price);
 
-    // Filter by rating
     if (selectedRatings.length > 0) {
       const minRating = Math.min(...selectedRatings);
       products = products.filter(p => p.rating >= minRating);
     }
 
-    // Sorting logic
     switch (sort) {
       case 'newest':
-        // No date field, so sorting by ID descending as a proxy
         products.sort((a, b) => parseInt(b.id) - parseInt(a.id));
         break;
       case 'price-low-high':
@@ -65,7 +63,7 @@ export default function ProductsPage() {
         break;
     }
 
-    setFilteredProducts(products);
+    return products;
   }, [selectedCategories, price, selectedRatings, sort]);
 
   const handleCategoryChange = (category: string, checked: boolean) => {

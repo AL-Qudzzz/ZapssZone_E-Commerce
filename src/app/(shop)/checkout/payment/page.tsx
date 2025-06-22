@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -6,8 +8,13 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
+import { useCart } from "@/context/cart-context";
 
 export default function PaymentPage() {
+  const { cartTotal } = useCart();
+  const shipping = cartTotal > 0 ? 5.00 : 0;
+  const total = cartTotal + shipping;
+
   return (
     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
       <div className="md:col-span-2">
@@ -69,15 +76,15 @@ export default function PaymentPage() {
           <CardContent className="space-y-2">
             <div className="flex justify-between text-muted-foreground">
               <span>Subtotal</span>
-              <span>$74.97</span>
+              <span>${cartTotal.toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-muted-foreground">
               <span>Shipping</span>
-              <span>$5.00</span>
+              <span>${shipping.toFixed(2)}</span>
             </div>
             <div className="flex justify-between font-semibold text-lg pt-2">
               <span>Total</span>
-              <span>$79.97</span>
+              <span>${total.toFixed(2)}</span>
             </div>
           </CardContent>
         </Card>
@@ -86,8 +93,8 @@ export default function PaymentPage() {
         <Button variant="ghost" asChild>
           <Link href="/checkout/address">Back to Address</Link>
         </Button>
-        <Button asChild size="lg">
-          <Link href="/checkout/confirmation">Pay $79.97</Link>
+        <Button asChild size="lg" disabled={total === 0}>
+          <Link href="/checkout/confirmation">Pay ${total.toFixed(2)}</Link>
         </Button>
       </div>
     </div>

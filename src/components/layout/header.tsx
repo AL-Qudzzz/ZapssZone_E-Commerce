@@ -20,8 +20,11 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
+import { useCart } from "@/context/cart-context";
+import { Badge } from "../ui/badge";
 
 export function Header() {
+  const { cartCount } = useCart();
   const navLinks = [
     { href: "/", label: "Home" },
     { href: "/products", label: "Products" },
@@ -92,7 +95,12 @@ export function Header() {
             </form>
           </div>
           <Button variant="ghost" size="icon" asChild>
-            <Link href="/cart">
+            <Link href="/cart" className="relative">
+              {cartCount > 0 && (
+                <Badge variant="destructive" className="absolute -top-2 -right-2 h-5 w-5 justify-center p-1 text-xs">
+                  {cartCount}
+                </Badge>
+              )}
               <ShoppingCart className="h-5 w-5" />
               <span className="sr-only">Shopping Cart</span>
             </Link>
