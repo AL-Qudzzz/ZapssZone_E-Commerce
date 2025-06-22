@@ -1,29 +1,18 @@
+
 "use client";
 
+import { useState } from "react";
 import Link from "next/link";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardFooter,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import {
-  Form,
-  FormControl,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from "@/components/ui/form";
-import { Input } from "@/components/ui/input";
-import { Separator } from "@/components/ui/separator";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
 import { useToast } from "@/hooks/use-toast";
+
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Separator } from "@/components/ui/separator";
+import { Loader2 } from "lucide-react";
 
 const GoogleIcon = () => (
     <svg className="mr-2 h-4 w-4" viewBox="0 0 24 24">
@@ -53,29 +42,32 @@ const FacebookIcon = () => (
     </svg>
 )
 
-const formSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email." }),
-  password: z.string().min(1, { message: "Password is required." }),
-});
-
-
 export function LoginForm() {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const { logIn } = useAuth();
+  const router = useRouter();
   const { toast } = useToast();
-  const form = useForm<z.infer<typeof formSchema>>({
-    resolver: zodResolver(formSchema),
-    defaultValues: {
-      email: "",
-      password: "",
-    },
-  });
 
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    console.log(values);
-    toast({
-      title: "Logged In (Simulated)",
-      description: "In a real app, you would be redirected.",
-    });
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email || !password) {
+      toast({ title: "Error", description: "Please enter email and password.", variant: "destructive" });
+      return;
+    }
+    setIsLoading(true);
+    try {
+      await logIn({ email, password });
+      toast({ title: "Login Successful", description: "Welcome back!" });
+      router.push("/");
+    } catch (error: any) {
+      console.error(error);
+      toast({ title: "Login Failed", description: error.message, variant: "destructive" });
+    } finally {
+      setIsLoading(false);
+    }
+  };
   
   return (
     <Card className="w-full max-w-sm">
@@ -85,66 +77,49 @@ export function LoginForm() {
           Enter your email below to login to your account.
         </CardDescription>
       </CardHeader>
-      <Form {...form}>
-        <form onSubmit={form.handleSubmit(onSubmit)}>
-          <CardContent className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
-              <Button variant="outline"><GoogleIcon/>Google</Button>
-              <Button variant="outline"><FacebookIcon/>Facebook</Button>
+      <form onSubmit={handleSubmit}>
+        <CardContent className="grid gap-4">
+          <div className="grid grid-cols-2 gap-4">
+            <Button variant="outline" type="button" disabled><GoogleIcon/>Google</Button>
+            <Button variant="outline" type="button" disabled><FacebookIcon/>Facebook</Button>
+          </div>
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <Separator />
             </div>
-            <div className="relative">
-              <div className="absolute inset-0 flex items-center">
-                <Separator />
-              </div>
-              <div className="relative flex justify-center text-xs uppercase">
-                <span className="bg-background px-2 text-muted-foreground">
-                  Or continue with
-                </span>
-              </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-background px-2 text-muted-foreground">
+                Or continue with
+              </span>
             </div>
-            <FormField
-              control={form.control}
-              name="email"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Email</FormLabel>
-                  <FormControl>
-                    <Input placeholder="m@example.com" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-            <FormField
-              control={form.control}
-              name="password"
-              render={({ field }) => (
-                <FormItem>
-                   <div className="flex items-center">
-                    <FormLabel>Password</FormLabel>
-                    <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
-                      Forgot your password?
-                    </Link>
-                  </div>
-                  <FormControl>
-                    <Input type="password" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
-          </CardContent>
-          <CardFooter className="flex flex-col gap-4">
-            <Button type="submit" className="w-full">Sign in</Button>
-            <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <Link href="/signup" className="underline">
-                Sign up
+          </div>
+          <div className="grid gap-2">
+            <Label htmlFor="email">Email</Label>
+            <Input id="email" type="email" placeholder="m@example.com" value={email} onChange={e => setEmail(e.target.value)} required />
+          </div>
+          <div className="grid gap-2">
+            <div className="flex items-center">
+              <Label htmlFor="password">Password</Label>
+              <Link href="/forgot-password" className="ml-auto inline-block text-sm underline">
+                Forgot your password?
               </Link>
             </div>
-          </CardFooter>
-        </form>
-      </Form>
+            <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
+          </div>
+        </CardContent>
+        <CardFooter className="flex flex-col gap-4">
+          <Button type="submit" className="w-full" disabled={isLoading}>
+            {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+            Sign in
+          </Button>
+          <div className="text-center text-sm">
+            Don&apos;t have an account?{" "}
+            <Link href="/signup" className="underline">
+              Sign up
+            </Link>
+          </div>
+        </CardFooter>
+      </form>
     </Card>
   );
 }

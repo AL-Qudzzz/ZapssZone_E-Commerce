@@ -1,14 +1,17 @@
+
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useSearchParams } from "next/navigation";
 import { ProductFilters } from "@/components/products/product-filters";
 import { ProductGrid } from "@/components/products/product-grid";
 import { Button } from "@/components/ui/button";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { Separator } from "@/components/ui/separator";
-import { ChevronDown } from "lucide-react";
-import { products as allProducts, Product } from "@/lib/placeholder-data";
+import { ChevronDown, Loader2 } from "lucide-react";
+import { Product } from "@/lib/placeholder-data";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
 const sortOptions: { [key: string]: string } = {
   'featured': 'Featured',
@@ -17,14 +20,37 @@ const sortOptions: { [key: string]: string } = {
   'price-high-low': 'Price: High to Low',
 };
 
+async function getAllProducts() {
+  const productsRef = collection(db, 'products');
+  const querySnapshot = await getDocs(productsRef);
+  const products: Product[] = [];
+  querySnapshot.forEach((doc) => {
+    products.push({ id: doc.id, ...doc.data() } as Product);
+  });
+  return products;
+}
+
 export default function ProductsPage() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category');
+  
+  const [allProducts, setAllProducts] = useState<Product[]>([]);
+  const [loading, setLoading] = useState(true);
 
   const [selectedCategories, setSelectedCategories] = useState<string[]>(initialCategory ? [initialCategory] : []);
   const [selectedRatings, setSelectedRatings] = useState<number[]>([]);
   const [price, setPrice] = useState<number>(1000);
   const [sort, setSort] = useState('featured');
+  
+  useEffect(() => {
+    const fetchProducts = async () => {
+      setLoading(true);
+      const products = await getAllProducts();
+      setAllProducts(products);
+      setLoading(false);
+    };
+    fetchProducts();
+  }, []);
 
   const filteredProducts = useMemo(() => {
     let products = [...allProducts];
@@ -64,7 +90,7 @@ export default function ProductsPage() {
     }
 
     return products;
-  }, [selectedCategories, price, selectedRatings, sort]);
+  }, [allProducts, selectedCategories, price, selectedRatings, sort]);
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     setSelectedCategories(prev => 
@@ -81,6 +107,14 @@ export default function ProductsPage() {
       checked ? [...prev, rating] : prev.filter(r => r !== rating)
     );
   };
+
+  if (loading) {
+    return (
+      <div className="container mx-auto px-6 py-8 flex justify-center items-center h-[60vh]">
+        <Loader2 className="h-12 w-12 animate-spin text-primary" />
+      </div>
+    )
+  }
 
   return (
     <div className="container mx-auto px-6 py-8">

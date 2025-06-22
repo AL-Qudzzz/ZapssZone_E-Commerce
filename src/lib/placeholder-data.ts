@@ -1,3 +1,4 @@
+
 export type Product = {
   id: string;
   name: string;
@@ -8,94 +9,8 @@ export type Product = {
   image: string;
   'data-ai-hint'?: string;
   tags?: string[];
+  description?: string; // Adding description field
 };
-
-export const products: Product[] = [
-  {
-    id: '1',
-    name: 'Smartwatch Pro X',
-    category: 'Electronics',
-    price: 249.99,
-    rating: 4.5,
-    reviews: 120,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'smartwatch product',
-    tags: ['new', 'sale', 'featured'],
-  },
-  {
-    id: '2',
-    name: 'Organic Green Tea',
-    category: 'Groceries',
-    price: 15.99,
-    rating: 4.8,
-    reviews: 88,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'tea package',
-  },
-  {
-    id: '3',
-    name: 'Modern Leather Sofa',
-    category: 'Home Goods',
-    price: 899.0,
-    rating: 4.2,
-    reviews: 45,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'leather sofa',
-  },
-  {
-    id: '4',
-    name: 'Running Shoes 360',
-    category: 'Fashion',
-    price: 120.5,
-    rating: 4.9,
-    reviews: 250,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'running shoes',
-    tags: ['featured'],
-  },
-  {
-    id: '5',
-    name: 'Wireless Earbuds v2',
-    category: 'Electronics',
-    price: 79.99,
-    rating: 4.6,
-    reviews: 310,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'wireless earbuds',
-    tags: ['featured'],
-  },
-  {
-    id: '6',
-    name: 'Handmade Ceramic Mug',
-    category: 'Home Goods',
-    price: 25.0,
-    rating: 4.9,
-    reviews: 95,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'ceramic mug',
-  },
-  {
-    id: '7',
-    name: 'Classic Denim Jacket',
-    category: 'Fashion',
-    price: 85.0,
-    rating: 4.7,
-    reviews: 150,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'denim jacket',
-  },
-  {
-    id: '8',
-    name: 'Yoga Mat Essential',
-    category: 'Sports',
-    price: 35.0,
-    rating: 4.8,
-    reviews: 180,
-    image: 'https://placehold.co/600x600',
-    'data-ai-hint': 'yoga mat',
-    tags: ['featured'],
-  },
-];
 
 export const categories = [
   { name: 'Electronics', count: 2 },

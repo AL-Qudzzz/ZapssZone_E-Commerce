@@ -1,13 +1,27 @@
+
 import Link from "next/link";
 import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { products } from "@/lib/placeholder-data";
 import { ProductCard } from "@/components/products/product-card";
 import { HeroSlideshow } from "@/components/home/hero-slideshow";
+import { collection, getDocs, query, where, limit } from "firebase/firestore";
+import { db } from "@/lib/firebase";
+import { Product } from "@/lib/placeholder-data";
 
-export default function HomePage() {
-  const featuredProducts = products.filter(p => p.tags?.includes('featured')).slice(0, 4);
+async function getFeaturedProducts() {
+  const productsRef = collection(db, 'products');
+  const q = query(productsRef, where("tags", "array-contains", "featured"), limit(4));
+  const querySnapshot = await getDocs(q);
+  const products: Product[] = [];
+  querySnapshot.forEach((doc) => {
+    products.push({ id: doc.id, ...doc.data() } as Product);
+  });
+  return products;
+}
+
+export default async function HomePage() {
+  const featuredProducts = await getFeaturedProducts();
 
   return (
     <>

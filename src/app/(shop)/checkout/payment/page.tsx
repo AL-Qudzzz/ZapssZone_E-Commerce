@@ -1,29 +1,46 @@
+
 "use client";
 
+import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Checkbox } from "@/components/ui/checkbox";
-import Link from "next/link";
-import { CreditCard, Landmark, Wallet } from "lucide-react";
+import { CreditCard, Landmark, Wallet, Loader2 } from "lucide-react";
 import { useCart } from "@/context/cart-context";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/auth-context";
+import { useToast } from "@/hooks/use-toast";
 
 export default function PaymentPage() {
-  const { cartTotal, createOrder } = useCart();
+  const { cartTotal, createOrder, loading: cartLoading } = useCart();
+  const { user, loading: authLoading } = useAuth();
   const router = useRouter();
+  const { toast } = useToast();
 
   const shipping = cartTotal > 0 ? 5.00 : 0;
   const total = cartTotal + shipping;
 
   const handlePayment = () => {
+    if (!user) {
+      toast({
+        title: "Authentication Required",
+        description: "Please log in to proceed with the payment.",
+        variant: "destructive"
+      });
+      router.push('/login?redirect=/checkout/payment');
+      return;
+    }
+
     if (total > 0) {
       createOrder();
       router.push('/checkout/confirmation');
     }
   };
+
+  const isLoading = cartLoading || authLoading;
 
   return (
     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -84,18 +101,26 @@ export default function PaymentPage() {
             <CardTitle>Order Summary</CardTitle>
           </CardHeader>
           <CardContent className="space-y-2">
-            <div className="flex justify-between text-muted-foreground">
-              <span>Subtotal</span>
-              <span>${cartTotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-muted-foreground">
-              <span>Shipping</span>
-              <span>${shipping.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between font-semibold text-lg pt-2">
-              <span>Total</span>
-              <span>${total.toFixed(2)}</span>
-            </div>
+             {isLoading ? (
+              <div className="flex justify-center items-center p-4">
+                <Loader2 className="h-6 w-6 animate-spin" />
+              </div>
+            ) : (
+            <>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Subtotal</span>
+                <span>${cartTotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-muted-foreground">
+                <span>Shipping</span>
+                <span>${shipping.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between font-semibold text-lg pt-2">
+                <span>Total</span>
+                <span>${total.toFixed(2)}</span>
+              </div>
+            </>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -103,7 +128,8 @@ export default function PaymentPage() {
         <Button variant="ghost" asChild>
           <Link href="/checkout/address">Back to Address</Link>
         </Button>
-        <Button onClick={handlePayment} size="lg" disabled={total === 0}>
+        <Button onClick={handlePayment} size="lg" disabled={total === 0 || isLoading}>
+          {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
           Pay ${total.toFixed(2)}
         </Button>
       </div>

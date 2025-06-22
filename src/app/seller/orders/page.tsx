@@ -1,18 +1,35 @@
+
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { collection, getDocs, query, orderBy, Timestamp } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-export default function SellerOrdersPage() {
-  const orders = [
-    { id: "ORD001", customer: "Liam Johnson", date: "2023-11-23", status: "Fulfilled", total: "$250.00" },
-    { id: "ORD002", customer: "Olivia Smith", date: "2023-11-22", status: "Shipped", total: "$150.00" },
-    { id: "ORD003", customer: "Noah Williams", date: "2023-11-21", status: "Pending", total: "$350.00" },
-    { id: "ORD004", customer: "Emma Brown", date: "2023-11-20", status: "Fulfilled", total: "$450.00" },
-    { id: "ORD005", customer: "James Jones", date: "2023-11-19", status: "Cancelled", total: "$550.00" },
-  ];
+interface Order {
+    id: string;
+    userId: string;
+    total: number;
+    status: string;
+    createdAt: Timestamp;
+    items: any[];
+}
+
+async function getOrders() {
+    const ordersCol = collection(db, 'orders');
+    const q = query(ordersCol, orderBy("createdAt", "desc"));
+    const orderSnapshot = await getDocs(q);
+    const orderList = orderSnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+    } as Order));
+    return orderList;
+}
+
+export default async function SellerOrdersPage() {
+  const orders = await getOrders();
 
   const getStatusVariant = (status: string) => {
     switch(status.toLowerCase()) {
@@ -39,7 +56,7 @@ export default function SellerOrdersPage() {
           <TableHeader>
             <TableRow>
               <TableHead>Order ID</TableHead>
-              <TableHead>Customer</TableHead>
+              <TableHead>Customer ID</TableHead>
               <TableHead>Status</TableHead>
               <TableHead className="hidden md:table-cell">Date</TableHead>
               <TableHead className="text-right">Total</TableHead>
@@ -51,13 +68,13 @@ export default function SellerOrdersPage() {
           <TableBody>
             {orders.map((order) => (
               <TableRow key={order.id}>
-                <TableCell className="font-medium">{order.id}</TableCell>
-                <TableCell>{order.customer}</TableCell>
+                <TableCell className="font-medium">{order.id.slice(0, 7)}...</TableCell>
+                <TableCell className="font-medium">{order.userId.slice(0, 7)}...</TableCell>
                 <TableCell>
                   <Badge variant={getStatusVariant(order.status)}>{order.status}</Badge>
                 </TableCell>
-                <TableCell className="hidden md:table-cell">{order.date}</TableCell>
-                <TableCell className="text-right">{order.total}</TableCell>
+                <TableCell className="hidden md:table-cell">{order.createdAt.toDate().toLocaleDateString()}</TableCell>
+                <TableCell className="text-right">${order.total.toFixed(2)}</TableCell>
                 <TableCell>
                 <DropdownMenu>
                     <DropdownMenuTrigger asChild>

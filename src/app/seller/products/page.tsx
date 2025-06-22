@@ -1,13 +1,25 @@
+
 import Image from "next/image";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
-import { products } from "@/lib/placeholder-data";
+import { Product } from "@/lib/placeholder-data";
 import { MoreHorizontal } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/lib/firebase";
 
-export default function SellerProductsPage() {
+async function getProducts() {
+    const productsCol = collection(db, 'products');
+    const productSnapshot = await getDocs(productsCol);
+    const productList = productSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as Product));
+    return productList;
+}
+
+export default async function SellerProductsPage() {
+  const products = await getProducts();
+
   return (
     <Card>
       <CardHeader>
