@@ -1,4 +1,16 @@
-export const products = [
+export type Product = {
+  id: string;
+  name: string;
+  category: string;
+  price: number;
+  rating: number;
+  reviews: number;
+  image: string;
+  'data-ai-hint'?: string;
+  tags?: string[];
+};
+
+export const products: Product[] = [
   {
     id: '1',
     name: 'Smartwatch Pro X',
@@ -8,7 +20,7 @@ export const products = [
     reviews: 120,
     image: 'https://placehold.co/600x600',
     'data-ai-hint': 'smartwatch product',
-    tags: ['new', 'sale'],
+    tags: ['new', 'sale', 'featured'],
   },
   {
     id: '2',

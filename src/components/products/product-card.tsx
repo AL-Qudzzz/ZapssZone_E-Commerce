@@ -5,19 +5,9 @@ import { Star, PlusCircle } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardFooter, CardHeader } from "@/components/ui/card";
+import type { Product } from "@/lib/placeholder-data";
 
-type ProductCardProps = {
-  id: string;
-  name: string;
-  price: number;
-  rating: number;
-  reviews: number;
-  image: string;
-  'data-ai-hint'?: string;
-  tags?: string[];
-};
-
-export function ProductCard({ id, name, price, rating, reviews, image, 'data-ai-hint': aiHint, tags }: ProductCardProps) {
+export function ProductCard({ id, name, price, rating, reviews, image, 'data-ai-hint': aiHint, tags }: Product) {
   return (
     <Card className="flex flex-col overflow-hidden transition-all duration-300 hover:shadow-lg">
       <CardHeader className="p-0">
