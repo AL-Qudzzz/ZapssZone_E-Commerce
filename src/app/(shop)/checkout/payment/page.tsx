@@ -9,11 +9,21 @@ import { Checkbox } from "@/components/ui/checkbox";
 import Link from "next/link";
 import { CreditCard, Landmark, Wallet } from "lucide-react";
 import { useCart } from "@/context/cart-context";
+import { useRouter } from "next/navigation";
 
 export default function PaymentPage() {
-  const { cartTotal } = useCart();
+  const { cartTotal, createOrder } = useCart();
+  const router = useRouter();
+
   const shipping = cartTotal > 0 ? 5.00 : 0;
   const total = cartTotal + shipping;
+
+  const handlePayment = () => {
+    if (total > 0) {
+      createOrder();
+      router.push('/checkout/confirmation');
+    }
+  };
 
   return (
     <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-8 items-start">
@@ -93,8 +103,8 @@ export default function PaymentPage() {
         <Button variant="ghost" asChild>
           <Link href="/checkout/address">Back to Address</Link>
         </Button>
-        <Button asChild size="lg" disabled={total === 0}>
-          <Link href="/checkout/confirmation">Pay ${total.toFixed(2)}</Link>
+        <Button onClick={handlePayment} size="lg" disabled={total === 0}>
+          Pay ${total.toFixed(2)}
         </Button>
       </div>
     </div>

@@ -1,23 +1,33 @@
 "use client";
 
-import { useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Separator } from "@/components/ui/separator";
 import { CheckCircle2 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { products } from "@/lib/placeholder-data";
 import { useCart } from "@/context/cart-context";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 
 export default function ConfirmationPage() {
-  const { clearCart } = useCart();
+  const { lastOrder } = useCart();
+  const router = useRouter();
 
   useEffect(() => {
-    clearCart();
-  }, [clearCart]);
+    if (lastOrder.length === 0) {
+      router.replace("/");
+    }
+  }, [lastOrder, router]);
 
-  const orderItems = products.slice(0, 2);
+  const subtotal = lastOrder.reduce((acc, item) => acc + item.price * item.quantity, 0);
+  const shipping = subtotal > 0 ? 15.00 : 0; // Assuming a fixed express shipping from previous step
+  const taxes = subtotal * 0.0825; // Example tax rate
+  const total = subtotal + shipping + taxes;
+  
+  if (lastOrder.length === 0) {
+    return null; 
+  }
 
   return (
     <div className="max-w-4xl mx-auto">
@@ -45,26 +55,26 @@ export default function ConfirmationPage() {
         </CardHeader>
         <CardContent>
           <div className="space-y-4">
-            {orderItems.map((item) => (
+            {lastOrder.map((item) => (
               <div key={item.id} className="flex items-center justify-between">
                 <div className="flex items-center gap-4">
                   <Image src={item.image} alt={item.name} width={64} height={64} className="rounded-md" data-ai-hint={item['data-ai-hint']} />
                   <div>
                     <p className="font-semibold">{item.name}</p>
-                    <p className="text-sm text-muted-foreground">Qty: 1</p>
+                    <p className="text-sm text-muted-foreground">Qty: {item.quantity}</p>
                   </div>
                 </div>
-                <p className="font-medium">${item.price.toFixed(2)}</p>
+                <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
               </div>
             ))}
           </div>
           <Separator className="my-4" />
           <div className="space-y-2">
-            <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>$329.98</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>$15.00</span></div>
-            <div className="flex justify-between"><span className="text-muted-foreground">Taxes</span><span>$27.60</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Shipping</span><span>${shipping.toFixed(2)}</span></div>
+            <div className="flex justify-between"><span className="text-muted-foreground">Taxes</span><span>${taxes.toFixed(2)}</span></div>
             <Separator className="my-2"/>
-            <div className="flex justify-between font-bold text-lg"><span >Total</span><span>$372.58</span></div>
+            <div className="flex justify-between font-bold text-lg"><span >Total</span><span>${total.toFixed(2)}</span></div>
           </div>
           <Separator className="my-4" />
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
