@@ -6,7 +6,7 @@ import { useToast } from '@/hooks/use-toast';
 import type { Product } from '@/lib/placeholder-data';
 import { useAuth } from './auth-context';
 import { db } from '@/lib/firebase';
-import { collection, doc, onSnapshot, writeBatch, getDocs, serverTimestamp, addDoc } from 'firebase/firestore';
+import { collection, doc, onSnapshot, writeBatch, getDocs, serverTimestamp, addDoc, setDoc, deleteDoc } from 'firebase/firestore';
 
 export interface CartItem extends Product {
   quantity: number;

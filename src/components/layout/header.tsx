@@ -22,7 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Sheet, SheetContent, SheetDescription, SheetTitle, SheetTrigger } from "@/components/ui/sheet";
 import { Input } from "../ui/input";
 import { useCart } from "@/context/cart-context";
 import { useAuth } from "@/context/auth-context";
@@ -78,6 +78,8 @@ export function Header() {
             </Button>
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
+            <SheetTitle className="sr-only">Main Menu</SheetTitle>
+            <SheetDescription className="sr-only">A list of navigation links for the ZappsZone application.</SheetDescription>
             <Link href="/" className="mr-6 flex items-center space-x-2 px-6">
               <Mountain className="h-6 w-6 text-primary" />
               <span className="font-bold font-headline">ZappsZone</span>
