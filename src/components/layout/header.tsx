@@ -141,6 +141,9 @@ export function Header() {
                 <>
                   <DropdownMenuLabel>My Account</DropdownMenuLabel>
                    <DropdownMenuSeparator />
+                   <DropdownMenuItem asChild>
+                      <Link href="/profile"><User className="mr-2 h-4 w-4" />Profile</Link>
+                    </DropdownMenuItem>
                    <DropdownMenuItem disabled>{user.email}</DropdownMenuItem>
                    <DropdownMenuSeparator />
                   <DropdownMenuItem onClick={logOut}>
