@@ -1,4 +1,3 @@
-
 "use client";
 
 import Link from "next/link";
@@ -10,8 +9,10 @@ import {
   Search,
   LogOut,
   LogIn,
-  UserPlus
+  UserPlus,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import React, { useState } from "react";
 
 import { Button } from "@/components/ui/button";
 import {
@@ -32,6 +33,14 @@ import { Avatar, AvatarFallback } from "../ui/avatar";
 export function Header() {
   const { cartCount } = useCart();
   const { user, logOut, loading } = useAuth();
+  const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState("");
+
+  const handleSearchSubmit = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (!searchTerm.trim()) return;
+    router.push(`/products?q=${encodeURIComponent(searchTerm.trim())}`);
+  };
   
   const navLinks = [
     { href: "/", label: "Home" },
@@ -99,13 +108,15 @@ export function Header() {
         <div className="flex flex-1 items-center justify-end space-x-2">
           <div className="flex-1" />
           <div className="hidden sm:block w-full max-w-xs">
-            <form>
+            <form onSubmit={handleSearchSubmit}>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
                 <Input
                   type="search"
                   placeholder="Search products..."
                   className="pl-9"
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
                 />
               </div>
             </form>

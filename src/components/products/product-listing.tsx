@@ -33,6 +33,7 @@ async function getAllProducts() {
 export default function ProductListing() {
   const searchParams = useSearchParams();
   const initialCategory = searchParams.get('category');
+  const searchQuery = searchParams.get('q');
   
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -54,6 +55,14 @@ export default function ProductListing() {
 
   const filteredProducts = useMemo(() => {
     let products = [...allProducts];
+
+    if (searchQuery) {
+        const lowercasedQuery = searchQuery.toLowerCase();
+        products = products.filter(p =>
+            p.name.toLowerCase().includes(lowercasedQuery) ||
+            (p.description && p.description.toLowerCase().includes(lowercasedQuery))
+        );
+    }
 
     if (selectedCategories.length > 0) {
       products = products.filter(p => selectedCategories.includes(p.category));
@@ -90,7 +99,7 @@ export default function ProductListing() {
     }
 
     return products;
-  }, [allProducts, selectedCategories, price, selectedRatings, sort]);
+  }, [allProducts, selectedCategories, price, selectedRatings, sort, searchQuery]);
 
   const handleCategoryChange = (category: string, checked: boolean) => {
     setSelectedCategories(prev => 
@@ -119,8 +128,16 @@ export default function ProductListing() {
   return (
     <div className="container mx-auto px-6 py-8">
       <header className="mb-8">
-        <h1 className="text-4xl font-headline font-bold">All Products</h1>
-        <p className="text-muted-foreground mt-2">Find your next favorite item from our curated collection.</p>
+        <h1 className="text-4xl font-headline font-bold">
+            {searchQuery ? 'Search Results' : 'All Products'}
+        </h1>
+        {searchQuery ? (
+            <p className="text-muted-foreground mt-2">
+                Showing results for: <span className="font-semibold text-foreground">"{searchQuery}"</span>
+            </p>
+        ) : (
+            <p className="text-muted-foreground mt-2">Find your next favorite item from our curated collection.</p>
+        )}
       </header>
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         <aside className="lg:col-span-1">
