@@ -21,7 +21,7 @@ const slides = [
     ctaLink: "/products"
   },
   {
-    image: "https://placehold.co/1200x600",
+    image: "https://i.imgur.com/MzZlxpa.jpeg",
     'data-ai-hint': 'latest gadgets',
     headline: "The Future of Tech is Here.",
     subheadline: "Explore cutting-edge electronics that push the boundaries of innovation.",
@@ -29,7 +29,7 @@ const slides = [
     ctaLink: "/products?category=Electronics"
   },
   {
-    image: "https://placehold.co/1200x600",
+    image: "https://i.imgur.com/H7MSlLm.jpeg",
     'data-ai-hint': 'fashion model runway',
     headline: "Unleash Your Inner Fashionista.",
     subheadline: "Find your signature look with our new season arrivals.",
