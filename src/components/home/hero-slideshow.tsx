@@ -13,7 +13,7 @@ import { Button } from "@/components/ui/button";
 
 const slides = [
   {
-    image: "https://placehold.co/1200x600",
+    image: "https://i.imgur.com/5jMQTzm.jpeg",
     'data-ai-hint': 'modern living room',
     headline: "Luxury & Style, Redefined.",
     subheadline: "Discover curated collections of the finest products, designed for the modern lifestyle.",
