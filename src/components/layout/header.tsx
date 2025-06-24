@@ -60,7 +60,7 @@ export function Header() {
         <div className="mr-4 hidden md:flex">
           <Link href="/" className="mr-6 flex items-center space-x-2">
             <Mountain className="h-6 w-6 text-primary" />
-            <span className="font-bold font-headline">ZappsZone</span>
+            <span className="font-bold font-headline">Polonia</span>
           </Link>
           <nav className="flex items-center space-x-6 text-sm font-medium">
             {navLinks.map((link) => (
@@ -88,10 +88,10 @@ export function Header() {
           </SheetTrigger>
           <SheetContent side="left" className="pr-0">
             <SheetTitle className="sr-only">Main Menu</SheetTitle>
-            <SheetDescription className="sr-only">A list of navigation links for the ZappsZone application.</SheetDescription>
+            <SheetDescription className="sr-only">A list of navigation links for the Polonia application.</SheetDescription>
             <Link href="/" className="mr-6 flex items-center space-x-2 px-6">
               <Mountain className="h-6 w-6 text-primary" />
-              <span className="font-bold font-headline">ZappsZone</span>
+              <span className="font-bold font-headline">Polonia</span>
             </Link>
             <div className="my-4 h-[calc(100vh-8rem)] pb-10 pl-6">
               <div className="flex flex-col space-y-3">

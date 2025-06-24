@@ -9,7 +9,7 @@ export function Footer() {
           <div className="col-span-1 md:col-span-1">
             <Link href="/" className="flex items-center space-x-2 text-foreground">
               <Mountain className="h-8 w-8 text-primary" />
-              <span className="text-2xl font-bold font-headline">ZappsZone</span>
+              <span className="text-2xl font-bold font-headline">Polonia</span>
             </Link>
             <p className="mt-4 text-sm text-muted-foreground">
               Discover a world of quality and convenience.
@@ -42,7 +42,7 @@ export function Footer() {
           </div>
         </div>
         <div className="mt-12 border-t pt-8 text-center text-sm text-muted-foreground">
-          <p>&copy; {new Date().getFullYear()} ZappsZone. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} Polonia. All rights reserved.</p>
         </div>
       </div>
     </footer>

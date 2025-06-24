@@ -6,7 +6,7 @@ import { CartProvider } from '@/context/cart-context';
 import { AuthProvider } from '@/context/auth-context';
 
 export const metadata: Metadata = {
-  title: 'ZappsZone',
+  title: 'Polonia',
   description: 'Your one-stop shop for everything amazing.',
 };
 

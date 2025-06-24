@@ -11,7 +11,7 @@ export default function AuthLayout({
       <div className="mb-6">
         <Link href="/" className="flex items-center space-x-2 text-foreground">
           <Mountain className="h-8 w-8 text-primary" />
-          <span className="text-2xl font-bold font-headline">ZappsZone</span>
+          <span className="text-2xl font-bold font-headline">Polonia</span>
         </Link>
       </div>
       {children}
